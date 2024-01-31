@@ -34,7 +34,7 @@ resource "aws_iam_role" "lambda_execution_role" {
 }
 
 resource "aws_lambda_function" "rust_lambda_function" {
-  count = data.aws_lambda_function.existing_lambda_function ? 0 : 1
+  count = try(length(data.aws_lambda_function.existing_lambda_function), 0)
 
   function_name    = "rustAWSLambdaFunc"
   role             = aws_iam_role.lambda_execution_role[0].arn
@@ -69,10 +69,9 @@ resource "aws_apigatewayv2_route" "route" {
 }
 
 resource "aws_lambda_permission" "apigateway_permission" {
-  count          = length(data.aws_lambda_function.existing_lambda_function) == 0 ? 1 : 0
+  count          = try(length(data.aws_lambda_function.existing_lambda_function), 0)
   statement_id   = "AllowExecutionFromAPIGateway"
   action         = "lambda:InvokeFunction"
-  function_name  = aws_lambda_function.rust_lambda_function[count.index].function_name
+  function_name  = try(aws_lambda_function.rust_lambda_function[count.index].function_name, null)
   principal      = "apigateway.amazonaws.com"
 }
-
