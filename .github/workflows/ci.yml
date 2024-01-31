@@ -48,7 +48,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('lambda-api/Cargo.lock') }}
 
       - name: Build Lambda Project
-        run: cargo lambda build --release
+        run: cargo lambda build --release --output-format zip
         working-directory: lambda-api
 
       - name: Upload Artifact
