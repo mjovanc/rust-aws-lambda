@@ -61,7 +61,7 @@ resource "aws_apigatewayv2_integration" "integration" {
 resource "aws_apigatewayv2_route" "route" {
   api_id    = aws_apigatewayv2_api.api.id
   route_key = "ANY /{proxy+}"
-  target   = aws_apigatewayv2_integration.integration[0].id
+  target    = aws_apigatewayv2_integration.integration.id
 }
 
 resource "aws_lambda_permission" "apigateway_permission" {
