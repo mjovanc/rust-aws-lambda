@@ -6,8 +6,16 @@ data "aws_iam_role" "existing_lambda_role" {
   name = "lambda_exec_role"
 }
 
+data "aws_lambda_function" "existing_lambda_function" {
+  function_name = "rustAWSLambdaFunc"
+}
+
+locals {
+  create_iam_role = length(data.aws_iam_role.existing_lambda_role) == 0
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
-  count = data.aws_iam_role.existing_lambda_role ? 0 : 1
+  count = local.create_iam_role ? 1 : 0
 
   name = "lambda_exec_role"
 
@@ -36,10 +44,6 @@ resource "aws_lambda_function" "rust_lambda_function" {
   source_code_hash = filebase64("../bootstrap.zip")
 }
 
-data "aws_lambda_function" "existing_lambda_function" {
-  function_name = "rustAWSLambdaFunc"
-}
-
 resource "aws_apigatewayv2_api" "api" {
   name          = "rust_lambda_api"
   protocol_type = "HTTP"
@@ -65,9 +69,10 @@ resource "aws_apigatewayv2_route" "route" {
 }
 
 resource "aws_lambda_permission" "apigateway_permission" {
-  count          = data.aws_lambda_function.existing_lambda_function ? 1 : 0
+  count          = length(data.aws_lambda_function.existing_lambda_function) == 0 ? 1 : 0
   statement_id   = "AllowExecutionFromAPIGateway"
   action         = "lambda:InvokeFunction"
-  function_name  = aws_lambda_function.rust_lambda_function[0].function_name
+  function_name  = aws_lambda_function.rust_lambda_function[count.index].function_name
   principal      = "apigateway.amazonaws.com"
 }
+
