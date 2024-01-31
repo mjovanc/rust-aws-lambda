@@ -37,14 +37,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.cargo
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            lambda-api/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('lambda-api/Cargo.lock') }}
 
       - name: Run Clippy
-        run: cargo clippy --all-targets --all-features
+        run: cargo clippy --all-targets --all-features --manifest-path=lambda-api/Cargo.toml
 
       - name: Build Project
-        run: cargo lambda build --release
+        run: cargo lambda build --release --manifest-path=lambda-api/Cargo.toml
 
       - name: Run Tests
-        run: cargo test
+        run: cargo test --manifest-path=lambda-api/Cargo.toml
