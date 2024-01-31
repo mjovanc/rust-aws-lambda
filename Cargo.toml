@@ -3,6 +3,10 @@ name = "rust-aws-lambda"
 version = "0.1.0"
 edition = "2021"
 authors = ["Marcus Cvjeticanin <mjovanc@icloud.com>"]
+description = "A simple example using Rust + AWS Lambda to serve a simple RESTful API."
+license = "GPL-3"
+repository = "https://github.com/mjovanc/rust-aws-lambda"
+rustc = "1.75.0"
 
 [dependencies]
 lambda_http = "0.8.3"
