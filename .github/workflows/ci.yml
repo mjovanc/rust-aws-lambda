@@ -22,6 +22,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: goto-bus-stop/setup-zig@v2
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
