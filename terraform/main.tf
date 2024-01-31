@@ -2,7 +2,13 @@ provider "aws" {
   region = "eu-north-1"
 }
 
+data "aws_iam_role" "existing_lambda_role" {
+  name = "lambda_exec_role"
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
+  count = data.aws_iam_role.existing_lambda_role ? 0 : 1
+
   name = "lambda_exec_role"
 
   assume_role_policy = jsonencode({
@@ -20,12 +26,18 @@ resource "aws_iam_role" "lambda_execution_role" {
 }
 
 resource "aws_lambda_function" "rust_lambda_function" {
+  count = data.aws_lambda_function.existing_lambda_function ? 0 : 1
+
   function_name    = "rustAWSLambdaFunc"
-  role             = aws_iam_role.lambda_execution_role.arn
+  role             = aws_iam_role.lambda_execution_role[0].arn
   handler          = "lambda-api::handler"
   runtime          = "provided.al2"
   filename         = "../bootstrap.zip"
   source_code_hash = filebase64("../bootstrap.zip")
+}
+
+data "aws_lambda_function" "existing_lambda_function" {
+  function_name = "rustAWSLambdaFunc"
 }
 
 resource "aws_apigatewayv2_api" "api" {
@@ -41,7 +53,7 @@ resource "aws_apigatewayv2_stage" "api_stage" {
 
 resource "aws_apigatewayv2_integration" "integration" {
   api_id             = aws_apigatewayv2_api.api.id
-  integration_uri    = aws_lambda_function.rust_lambda_function.invoke_arn
+  integration_uri    = aws_lambda_function.rust_lambda_function[0].invoke_arn
   integration_method = "POST"
   integration_type   = "AWS_PROXY"
 }
@@ -49,12 +61,13 @@ resource "aws_apigatewayv2_integration" "integration" {
 resource "aws_apigatewayv2_route" "route" {
   api_id    = aws_apigatewayv2_api.api.id
   route_key = "ANY /{proxy+}"
-  target = aws_apigatewayv2_integration.integration.id
+  target   = aws_apigatewayv2_integration.integration[0].id
 }
 
 resource "aws_lambda_permission" "apigateway_permission" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.rust_lambda_function.function_name
-  principal     = "apigateway.amazonaws.com"
+  count          = data.aws_lambda_function.existing_lambda_function ? 1 : 0
+  statement_id   = "AllowExecutionFromAPIGateway"
+  action         = "lambda:InvokeFunction"
+  function_name  = aws_lambda_function.rust_lambda_function[0].function_name
+  principal      = "apigateway.amazonaws.com"
 }
