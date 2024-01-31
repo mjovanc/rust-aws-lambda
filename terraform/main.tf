@@ -26,6 +26,7 @@ resource "aws_lambda_function" "rust_lambda_function" {
   runtime          = "provided.al2"
   filename         = "../lambda-api/target/lambda/lambda-api/bootstrap.zip"
   source_code_hash = filebase64("../lambda-api/target/lambda/lambda-api/bootstrap.zip")
+  memory           = 512
 
   environment {
     variables = {
