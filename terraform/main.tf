@@ -24,8 +24,8 @@ resource "aws_lambda_function" "rust_lambda_function" {
   role             = aws_iam_role.lambda_execution_role.arn
   handler          = "lambda-api::handler"
   runtime          = "provided.al2"
-  filename         = "../lambda-api/target/lambda/lambda-api/bootstrap.zip"  # Update with the correct relative path
-  source_code_hash = filebase64("../lambda-api/target/lambda/lambda-api/bootstrap.zip")  # Update with the path to your compiled Rust Lambda code
+  filename         = "../lambda-api/target/lambda/lambda-api/bootstrap.zip"
+  source_code_hash = filebase64("../lambda-api/target/lambda/lambda-api/bootstrap.zip")
 
   environment {
     variables = {
@@ -43,7 +43,7 @@ resource "aws_apigatewayv2_api" "api" {
 resource "aws_apigatewayv2_integration" "integration" {
   api_id          = aws_apigatewayv2_api.api.id
   integration_uri = aws_lambda_function.rust_lambda_function.invoke_arn
-  integration_method = "POST"  # Update with your HTTP method (GET, POST, etc.)
+  integration_method = ["POST", "GET", "OPTION", "HEAD"]
   integration_type   = "AWS_PROXY"
 }
 
