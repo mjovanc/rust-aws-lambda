@@ -25,6 +25,8 @@ jobs:
       artifacts: ${{ needs.build.outputs.artifacts }}
 
     steps:
+      - uses: goto-bus-stop/setup-zig@v2
+
       - name: Checkout Code
         uses: actions/checkout@v3
 
