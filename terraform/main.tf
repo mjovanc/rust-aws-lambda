@@ -24,8 +24,8 @@ resource "aws_lambda_function" "rust_lambda_function" {
   role             = aws_iam_role.lambda_execution_role.arn
   handler          = "lambda-api::handler"
   runtime          = "provided.al2"
-  filename         = "lambda-api/target/lambda/lambda-api/bootstrap.zip"
-  source_code_hash = filebase64("lambda-api/target/lambda/lambda-api/bootstrap.zip")
+  filename         = "bootstrap.zip"
+  source_code_hash = filebase64("bootstrap.zip")
 
   environment {
     variables = {

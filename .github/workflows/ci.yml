@@ -94,7 +94,7 @@ jobs:
         run: terraform plan -input=false
         working-directory: terraform
 
-        # On push to "main", deploy the Terraform infrastructure
+        # On push to "master", deploy the Terraform infrastructure
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
