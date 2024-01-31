@@ -20,7 +20,7 @@ resource "aws_iam_role" "lambda_execution_role" {
 }
 
 resource "aws_lambda_function" "rust_lambda_function" {
-  function_name    = "rustLambdaFunction"
+  function_name    = "rustAWSLambdaFunc"
   role             = aws_iam_role.lambda_execution_role.arn
   handler          = "lambda-api::handler"
   runtime          = "provided.al2"
