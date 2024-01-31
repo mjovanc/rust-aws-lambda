@@ -40,27 +40,6 @@ resource "aws_apigatewayv2_integration" "integration" {
   integration_type   = "AWS_PROXY"
 }
 
-resource "aws_apigatewayv2_integration" "integration" {
-  api_id             = aws_apigatewayv2_api.api.id
-  integration_uri    = aws_lambda_function.rust_lambda_function.invoke_arn
-  integration_method = "GET"
-  integration_type   = "AWS_PROXY"
-}
-
-resource "aws_apigatewayv2_integration" "integration" {
-  api_id             = aws_apigatewayv2_api.api.id
-  integration_uri    = aws_lambda_function.rust_lambda_function.invoke_arn
-  integration_method = "OPTION"
-  integration_type   = "AWS_PROXY"
-}
-
-resource "aws_apigatewayv2_integration" "integration" {
-  api_id             = aws_apigatewayv2_api.api.id
-  integration_uri    = aws_lambda_function.rust_lambda_function.invoke_arn
-  integration_method = "HEAD"
-  integration_type   = "AWS_PROXY"
-}
-
 resource "aws_apigatewayv2_route" "route" {
   api_id    = aws_apigatewayv2_api.api.id
   route_key = "ANY /{proxy+}"
