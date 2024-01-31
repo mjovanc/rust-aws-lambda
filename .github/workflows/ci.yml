@@ -12,6 +12,10 @@ on:
       - "**/LICENSE"
       - "**/.gitignore"
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     name: Build
@@ -55,17 +59,39 @@ jobs:
     needs: build
 
     steps:
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::590184020990:role/RustAWSLambda
+          aws-region: eu-north-1
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
           name: lambda-zip
 
-      - name: Prepare Terraform
-        run: |
-          cd terraform
-          terraform init
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
 
-      - name: Apply Terraform Changes
-        run: |
-          cd terraform
-          terraform apply -auto-approve
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Format
+        run: terraform fmt -check
+        working-directory: terraform
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
+        working-directory: terraform
+
+        # On push to "main", deploy the Terraform infrastructure
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
+        working-directory: terraform
