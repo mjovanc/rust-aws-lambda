@@ -1,6 +1,6 @@
 use tracing_subscriber::filter::{EnvFilter, LevelFilter};use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
 
-async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
+async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let who = event
         .query_string_parameters_ref()
@@ -32,5 +32,5 @@ async fn main() -> Result<(), Error> {
         .without_time()
         .init();
 
-    run(service_fn(function_handler)).await
+    run(service_fn(handler)).await
 }

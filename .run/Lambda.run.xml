@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Build" type="CargoCommandRunConfiguration" factoryName="Cargo Command" nameIsGenerated="true">
-    <option name="command" value="build" />
+  <configuration default="false" name="Lambda" type="CargoCommandRunConfiguration" factoryName="Cargo Command" nameIsGenerated="true">
+    <option name="command" value="lambda build" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$/lambda-api" />
     <envs />
     <option name="emulateTerminal" value="true" />
