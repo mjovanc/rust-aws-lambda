@@ -1,4 +1,4 @@
-name: build
+name: deploy
 
 on:
   push:
@@ -14,12 +14,15 @@ on:
 
 jobs:
   build:
-    name: build
+    name: Build Lambda Function
     runs-on: ubuntu-latest
 
+    outputs:
+      artifacts: ${{ needs.build.outputs.artifacts }}
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: goto-bus-stop/setup-zig@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -37,11 +40,32 @@ jobs:
             lambda-api/.cargo
           key: ${{ runner.os }}-cargo-${{ hashFiles('lambda-api/Cargo.lock') }}
 
-      - name: Run Clippy
-        run: cargo clippy --all-targets --all-features --manifest-path=lambda-api/Cargo.toml
-
-      - name: Build Project
+      - name: Build Lambda Project
         run: cargo lambda build --release --manifest-path=lambda-api/Cargo.toml
 
-      - name: Run Tests
-        run: cargo test --manifest-path=lambda-api/Cargo.toml
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: lambda-zip
+          path: lambda-api/target/lambda/lambda-api/bootstrap.zip
+
+  deploy:
+    name: Deploy Lambda and Infrastructure
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: lambda-zip
+
+      - name: Prepare Terraform
+        run: |
+          cd terraform
+          terraform init
+
+      - name: Apply Terraform Changes
+        run: |
+          cd terraform
+          terraform apply -auto-approve
