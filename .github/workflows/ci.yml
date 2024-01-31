@@ -29,6 +29,9 @@ jobs:
           profile: minimal
           toolchain: stable
 
+      - name: Install Cargo Lambda
+        run: cargo install cargo-lambda
+
       - name: Cache Cargo Dependencies
         uses: actions/cache@v2
         with:
