@@ -26,13 +26,6 @@ resource "aws_lambda_function" "rust_lambda_function" {
   runtime          = "provided.al2"
   filename         = "../bootstrap.zip"
   source_code_hash = filebase64("../bootstrap.zip")
-
-#  environment {
-#    variables = {
-#      key1 = "value1",
-#      key2 = "value2",
-#    }
-#  }
 }
 
 resource "aws_apigatewayv2_api" "api" {
