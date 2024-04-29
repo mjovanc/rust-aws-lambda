@@ -1,5 +1,27 @@
 use tracing_subscriber::filter::{EnvFilter, LevelFilter};use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
 
+/// Handles an AWS Lambda HTTP request asynchronously.
+///
+/// # Arguments
+///
+/// * `event` - The incoming HTTP request event.
+///
+/// # Returns
+///
+/// Returns a `Result` containing the HTTP response or an error.
+///
+/// # Examples
+///
+/// ```rust
+/// use lambda_http::{Request, Body, Response};
+/// use lambda_http::http::Method;
+/// use std::convert::Infallible;
+///
+/// async fn handle_request(event: Request) -> Result<Response<Body>, Infallible> {
+///     // Handle the HTTP request here
+///     unimplemented!();
+/// }
+/// ```
 async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let who = event
@@ -18,6 +40,27 @@ async fn handler(event: Request) -> Result<Response<Body>, Error> {
     Ok(resp)
 }
 
+/// Initializes and runs the AWS Lambda HTTP handler.
+///
+/// # Returns
+///
+/// Returns a `Result` indicating success or failure.
+///
+/// # Errors
+///
+/// This function returns an error if there is an issue initializing the tracing subscriber or
+/// running the Lambda handler.
+///
+/// # Examples
+///
+/// ```rust
+/// use lambda_http::Error;
+///
+/// #[tokio::main]
+/// async fn main() -> Result<(), Error> {
+///     lambda_http_rust::run_lambda().await
+/// }
+/// ```
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt()
